@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <http:listener-config name="sample-exp-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8090" />
+    </http:listener-config>
+    <apikit:config name="sample-exp-api-config" api="sample-exp-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="4a819ebd-d3ce-4502-8857-e8258a6a0170" >
+		<http:request-connection host="localhost" port="8091" />
+	</http:request-config>
+	<flow name="sample-exp-api-main">
+        <http:listener config-ref="sample-exp-api-httpListenerConfig" path="/sample-exp-api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sample-exp-api-config" />
+		<error-handler ref="sample-exp-api-error-handlingError_Handler" />
+      
+    </flow>
+    <flow name="post:\patient:application\json:sample-exp-api-config">
+		<http:request method="POST" doc:name="Request" doc:id="3a458c2d-9fae-4db6-bf4e-de8aead228b6" config-ref="HTTP_Request_configuration" path="/sample-proc-api/patient" responseTimeout="100000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client-id" : "abc",
+	"client_secret": "def"
+}]]]></http:headers>
+		</http:request>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "patient profile created successfully"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>

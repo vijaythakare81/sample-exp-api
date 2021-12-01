@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "8cb6d6b9-c95b-42ff-a4b1-69063e2347f8",
+		"name": "sample-exp-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8090/sample-exp-api/patient",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"vijay\",\r\n  \"lastName\": \"thakare\",\r\n  \"DOB\": \"1997-07-31\",\r\n  \"gender\": \"M\",\r\n  \"emailId\":\"abc123@tempmail.com\",\r\n  \"country\": \"USA\",\r\n  \"language\": \"en_US\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/sample-exp-api/patient",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"sample-exp-api",
+						"patient"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
